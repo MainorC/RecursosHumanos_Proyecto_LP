@@ -19,8 +19,8 @@ namespace RecursosHumanos.Data.Access
                 if (string.IsNullOrEmpty(_connectionString))
                 {
                     // Cadena de conexión por defecto - puede ser configurada
-                    _connectionString = "Server=FSOCIETY\\SQLEXPRESS;Database=SGRH;Integrated Security=true;TrustServerCertificate=true;";
-                    
+                    _connectionString = "Server=DESKTOP-G1T7S2S\\SQLEXPRESS;Database=SGRH;Integrated Security=true;TrustServerCertificate=true;";
+
                     // Si existe un archivo de configuración, se puede leer desde ahí
                     // _connectionString = ConfigurationManager.ConnectionStrings["SGRHConnection"].ConnectionString;
                 }
