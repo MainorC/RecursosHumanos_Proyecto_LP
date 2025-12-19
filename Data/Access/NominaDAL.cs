@@ -113,7 +113,8 @@ namespace RecursosHumanos.Data.Access
             using (var context = DatabaseConnection.CreateDbContext())
             {
                 var nomina = context.Nomina.Find(id);
-                if (nomina == null || nomina.Estado != "Borrador")
+                // Permitir eliminar nóminas en estado "Pendiente" o "Borrador" (no las "Pagadas")
+                if (nomina == null || nomina.Estado == "Pagada")
                     return false;
 
                 context.Nomina.Remove(nomina);
@@ -125,8 +126,9 @@ namespace RecursosHumanos.Data.Access
         {
             using (var context = DatabaseConnection.CreateDbContext())
             {
+                // Eliminar nóminas pendientes o en borrador del período (no las pagadas)
                 var nominas = context.Nomina
-                    .Where(n => n.Periodo == periodo && n.Estado == "Borrador")
+                    .Where(n => n.Periodo == periodo && n.Estado != "Pagada")
                     .ToList();
 
                 if (nominas.Count == 0)
