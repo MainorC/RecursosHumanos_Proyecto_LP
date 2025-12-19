@@ -29,7 +29,12 @@ namespace RecursosHumanos.Common.Helpers
             {
                 return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
             }
-            catch
+            catch (BCrypt.Net.SaltParseException)
+            {
+                // Si el hash tiene formato inválido
+                return false;
+            }
+            catch (Exception)
             {
                 // si hay error retornar false
                 return false;
