@@ -120,7 +120,7 @@ namespace RecursosHumanos.Presentation.Views
             // cmbRol
             // 
             cmbRol.Font = new Font("Segoe UI", 9F);
-            cmbRol.Items.AddRange(new object[] { "Empleado", "Administrador" });
+            cmbRol.Items.AddRange(new object[] { "Gerente", "Administrador" });
             cmbRol.Location = new Point(20, 115);
             cmbRol.Name = "cmbRol";
             cmbRol.Size = new Size(350, 28);
