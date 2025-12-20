@@ -240,4 +240,3 @@ namespace RecursosHumanos.Presentation.Views
         private Label lblContrasena;
     }
 }
-
