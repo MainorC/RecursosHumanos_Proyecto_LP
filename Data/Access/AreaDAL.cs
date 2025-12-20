@@ -35,6 +35,18 @@ namespace RecursosHumanos.Data.Access
         {
             using (var context = DatabaseConnection.CreateDbContext())
             {
+                // Verificar si existe un área inactiva con el mismo nombre
+                var areaExistente = context.Areas
+                       .FirstOrDefault(a => a.Nombre == area.Nombre && !a.Activo);
+                
+                if (areaExistente != null)
+                {
+                    // Reactivar el área existente en lugar de crear una nueva
+                    areaExistente.Descripcion = area.Descripcion;
+                    areaExistente.Activo = true;
+                    return context.SaveChanges() > 0;
+                }
+                        
                 context.Areas.Add(area);
                 return context.SaveChanges() > 0;
             }
@@ -74,13 +86,14 @@ namespace RecursosHumanos.Data.Access
         {
             using (var context = DatabaseConnection.CreateDbContext())
             {
+                // Solo verificar entre las áreas ACTIVAS
                 var query = context.Areas.Where(a => a.Nombre == nombre && a.Activo);
                 
                 if (idExcluir.HasValue)
                 {
                     query = query.Where(a => a.Id != idExcluir.Value);
                 }
-                
+                    
                 return query.Any();
             }
         }
