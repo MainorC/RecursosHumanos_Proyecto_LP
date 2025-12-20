@@ -68,13 +68,14 @@ namespace RecursosHumanos.Presentation.Presenters
             catch (Exception ex)
             {
                 string mensajeError = ex.Message;
-                if (mensajeError.Contains("UNIQUE constraint") || mensajeError.Contains("duplicate"))
+                if (mensajeError.Contains("UNIQUE constraint") || mensajeError.Contains("duplicate") || 
+                    mensajeError.Contains("IX_Areas_Nombre") || mensajeError.Contains("unique index"))
                 {
-                    mensajeError = "Ya existe un área con este nombre. Por favor, elija otro nombre.";
+                    mensajeError = "Ya existe un área con este nombre (puede estar eliminada). Por favor, elija otro nombre.";
                 }
                 else if (mensajeError.Contains("FOREIGN KEY") || mensajeError.Contains("constraint"))
                 {
-                    mensajeError = "No se puede eliminar esta área porque tiene empleados asignados.";
+                    mensajeError = "No se puede realizar esta operación porque hay datos relacionados.";
                 }
                 _view.MostrarMensaje(mensajeError, "Error", MessageBoxIcon.Error);
             }
@@ -113,7 +114,8 @@ namespace RecursosHumanos.Presentation.Presenters
         {
             try
             {
-                var areas = _areaBLL.ObtenerTodas(soloActivas: false); // Mostrar todas las áreas para poder reactivarlas
+                // Cargar solo áreas activas para mostrar en la lista
+                var areas = _areaBLL.ObtenerTodas(soloActivas: true);
                 _view.CargarAreas(areas);
             }
             catch (Exception ex)
@@ -134,11 +136,18 @@ namespace RecursosHumanos.Presentation.Presenters
 
                 if (UIHelper.MostrarConfirmacion(mensaje, "Confirmar Eliminación") == DialogResult.Yes)
                 {
-                    _areaBLL.Eliminar(areaId);
-                    _view.MostrarMensaje("Área eliminada exitosamente.", "Éxito", MessageBoxIcon.Information);
-                    _view.LimpiarFormulario();
-                    _areaActual = null;
-                    CargarAreas();
+                    bool resultado = _areaBLL.Eliminar(areaId);
+                    if (resultado)
+                    {
+                        _view.MostrarMensaje("Área eliminada exitosamente.", "Éxito", MessageBoxIcon.Information);
+                        _view.LimpiarFormulario();
+                        _areaActual = null;
+                        CargarAreas();
+                    }
+                    else
+                    {
+                        _view.MostrarMensaje("No se pudo eliminar el área.", "Error", MessageBoxIcon.Error);
+                    }
                 }
             }
             catch (Exception ex)
@@ -177,10 +186,15 @@ namespace RecursosHumanos.Presentation.Presenters
         {
             try
             {
+                // Buscar solo en áreas activas
                 var areas = _areaBLL.ObtenerTodas(soloActivas: true);
                 if (!string.IsNullOrWhiteSpace(criterio))
                 {
-                    areas = areas.Where(a => a.Nombre.Contains(criterio, StringComparison.OrdinalIgnoreCase)).ToList();
+                    string criterioLower = criterio.Trim();
+                    areas = areas.Where(a => 
+      a.Nombre.Contains(criterioLower, StringComparison.OrdinalIgnoreCase) ||
+   (a.Descripcion != null && a.Descripcion.Contains(criterioLower, StringComparison.OrdinalIgnoreCase))
+         ).ToList();
                 }
                 return areas;
             }
@@ -192,4 +206,3 @@ namespace RecursosHumanos.Presentation.Presenters
         }
     }
 }
-
