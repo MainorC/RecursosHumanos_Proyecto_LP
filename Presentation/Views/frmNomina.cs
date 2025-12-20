@@ -473,6 +473,3 @@ control.Visible = true;
      }
     }
 }
-
-
-
