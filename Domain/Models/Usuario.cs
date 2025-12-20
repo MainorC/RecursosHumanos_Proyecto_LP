@@ -11,4 +11,3 @@ namespace RecursosHumanos.Domain.Models
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
     }
 }
-
